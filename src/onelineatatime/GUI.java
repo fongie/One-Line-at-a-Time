@@ -3,11 +3,14 @@ package onelineatatime;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
 
 /* This is the GUI and effectively main part of the program */
 
 public class GUI {
 
+	//0 for pdf 1 for input
+	private int mode;
 	/*
 	 * FOR START AND INPUT SCREEN
 	 */
@@ -16,6 +19,11 @@ public class GUI {
 	private JTextArea textField; // text field to paste in at init
 	private JButton startBtn;
 
+	/*
+	 * FOR PDF MODE
+	 */
+	private int pageStart = 0;
+	private PDFHandler pdf;
 	/*
 	 * FOR READER MODE
 	 */
@@ -35,13 +43,63 @@ public class GUI {
 		window.setTitle("One Line at a Time");
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		container = new JPanel(new BorderLayout());
+		container.setPreferredSize(new Dimension(600,600));
 
+		// start window where you choose pdf more or text mode
+		JPanel btnpanel = new JPanel();
 		JButton pdfmodeBtn = new JButton("PDF Mode");
 		JButton inputmodeBtn = new JButton("Text Mode");
+		pdfmodeBtn.setPreferredSize(Constants.startbtnsize);
+		inputmodeBtn.setPreferredSize(Constants.startbtnsize);
+		
+		
+		// layout to choose pdf and which page to start at
+		JPanel pdfPageChoser = new JPanel();
+		pdfPageChoser.setLayout(new BoxLayout(pdfPageChoser, BoxLayout.PAGE_AXIS));
+		pdfPageChoser.setPreferredSize(Constants.startbtnsize);
+		JPanel pagestartwrapper = new JPanel();
+		pagestartwrapper.setPreferredSize(new Dimension(Constants.startbtnsize.width, Constants.startbtnsize.height/2));
+		JLabel pdftext = new JLabel();
+		pdftext.setText("Pagenr Start:");
+		JTextArea pdfpage = new JTextArea("1");
+		pdfpage.setEditable(true);
+		pagestartwrapper.setLayout(new BoxLayout(pagestartwrapper, BoxLayout.LINE_AXIS));
+		pagestartwrapper.add(pdftext);
+		pagestartwrapper.add(pdfpage);
+
+		JButton openfileBtn = new JButton("Open PDF");
+		pdfpage.setPreferredSize(new Dimension(Constants.startbtnsize.width/2, Constants.startbtnsize.height/2));
+		openfileBtn.setPreferredSize(new Dimension(Constants.startbtnsize.width, Constants.startbtnsize.height/2));
+		pdfPageChoser.add(pagestartwrapper);
+		pdfPageChoser.add(openfileBtn);
+		
 		pdfmodeBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				PDFHandler pdf = new PDFHandler("C:\\Users\\Max\\Desktop\\Programmering\\Java\\OneLineAtATime\\pdf\\test.pdf", 5, 10);
-				startReading(pdf.nextPage());
+			btnpanel.remove(pdfmodeBtn);
+			btnpanel.add(pdfPageChoser);
+			window.setVisible(true);
+		}
+		});
+		// add btn actionlisteners. pdf one opens an "open file" dialogue
+		openfileBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+				pageStart = Integer.parseInt(pdfpage.getText()) - 1;
+				} catch (NumberFormatException err) {
+					pdfpage.setText("Use Valid Nr");
+					return;
+				}
+				JFileChooser fc = new JFileChooser();
+				int returnVal = fc.showOpenDialog(fc);
+				if (returnVal == JFileChooser.APPROVE_OPTION) {
+					File file = fc.getSelectedFile();
+					pdf = new PDFHandler(file, pageStart);
+					mode = 0;
+					startReading(pdf.nextPage());
+				} else {
+					pdfpage.setText("Interrupted/Failed");
+					System.out.println("Failed to choose pdf from menu");
+				}
 			}
 		});
 		inputmodeBtn.addActionListener(new ActionListener() {
@@ -49,9 +107,16 @@ public class GUI {
 				guiInputMode();
 			}
 		});
+		JPanel wrapper = new JPanel();
+		wrapper.setLayout(new BoxLayout(wrapper, BoxLayout.PAGE_AXIS));
+		wrapper.add(Box.createVerticalStrut(250));
+		btnpanel.add(inputmodeBtn);
+		btnpanel.add(pdfmodeBtn);
+		wrapper.add(btnpanel, BorderLayout.CENTER);
+		wrapper.add(Box.createVerticalStrut(250));
+		container.add(wrapper);
 		
-		container.add(pdfmodeBtn, BorderLayout.CENTER);
-		container.add(inputmodeBtn,BorderLayout.SOUTH);
+		//final add and show gui
 		window.add(container);
 		window.pack();
 		window.setVisible(true);;
@@ -59,6 +124,7 @@ public class GUI {
 	
 
 	public void guiInputMode() {
+		mode = 1;
 		container.removeAll();
 		// setup the text field for text input
 		textField = new JTextArea("Insert text to be read here, then click Start.", 50, 150); // in practice sets window size
@@ -89,6 +155,7 @@ public class GUI {
 		// container.remove(textField);
 		// container.remove(startBtn);
 		container.removeAll();
+		container.setPreferredSize(new Dimension(1200,800));
 
 		// create JLabel that displays current line
 		textLine = new JLabel(Constants.lineCSS + "Use arrow keys or buttons to read forward and backward</p></html>");
@@ -110,7 +177,7 @@ public class GUI {
 		prevBtn.setAlignmentX(Component.LEFT_ALIGNMENT);
 		prevBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				textLine.setText(Constants.lineCSS + reader.getPreviousLine() + Constants.endLineCSS);
+				showPrevLine();
 			}
 		});
 
@@ -118,7 +185,7 @@ public class GUI {
 		nextBtn.setAlignmentX(Component.RIGHT_ALIGNMENT);
 		nextBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				textLine.setText(Constants.lineCSS + reader.getNextLine() + Constants.endLineCSS);
+					showNextLine();
 			}
 		});
 
@@ -129,9 +196,31 @@ public class GUI {
 		southPanel.add(nextBtn);
 		northPanel.add(goToLineBtn);
 
+		//keylistener to use arrow keys
+		container.addKeyListener(new KeyListener() {
+
+			public void keyTyped(KeyEvent e) { return; }
+			
+			public void keyPressed(KeyEvent e) {
+				int keyCode = e.getKeyCode();
+				switch(keyCode) {
+				case KeyEvent.VK_LEFT:
+					System.out.println("PRESS!");
+					showPrevLine();
+					break;
+				case KeyEvent.VK_RIGHT:
+					showNextLine();
+				}
+			}
+			
+			public void keyReleased(KeyEvent e) {return;}
+		});
+
+		container.setFocusable(true);
 		window.pack();
 		// update gui
 		window.setVisible(true);
+	
 	}
 
 	private void startReading(String inputText) {
@@ -140,4 +229,23 @@ public class GUI {
 		// put GUI in read mode
 		guiReaderMode();
 	}
+	
+	/* For reader mode, goes to next line
+	 */
+	private void showNextLine() {
+		try {
+			textLine.setText(Constants.lineCSS + reader.getNextLine() + Constants.endLineCSS);
+		} catch (NoNextLineException ex) {
+			//if pdf mode get next pdf page, else its finished
+			if(mode == 0) {
+				reader = new TextReader(pdf.nextPage());
+			} else {
+				textLine.setText(Constants.lineCSS + "FINISHED" + Constants.endLineCSS);
+			}
+		}
+	}
+	private void showPrevLine() {
+		textLine.setText(Constants.lineCSS + reader.getPreviousLine() + Constants.endLineCSS);
+	}
+	
 }

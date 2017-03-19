@@ -22,9 +22,9 @@ public class TextReader {
 											// split by . or ?
 	}
 
-	public String getNextLine() {
+	public String getNextLine() throws NoNextLineException {
 		if (lineCounter == totalLines)
-			return endText;
+			throw new NoNextLineException();
 
 		return lines[lineCounter++];
 	}
@@ -33,6 +33,7 @@ public class TextReader {
 		if (!(lineCounter > 0)) // if you press prev line while at line 0,
 								// nothing happens
 			return lines[lineCounter];
+		lineCounter--;
 		return lines[--lineCounter];
 	}
 }

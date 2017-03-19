@@ -12,7 +12,6 @@ import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
 
 public class PDFHandler {
 	
-	private String filename;
 	private File pdf;
 	private PDDocument pdd;
 	private PDFTextStripper pdfreader;
@@ -24,16 +23,13 @@ public class PDFHandler {
 	 * split it into pages, we put the pages in a list and only continue with the subset of pages that we want,
 	 * and create an iterator.
 	 */
-	public PDFHandler(String filename, int page_start, int page_end) {
-		this.filename = filename;
+	public PDFHandler(File pdf, int page_start) {
 		try {
-			this.pdf = new File(filename);
+			this.pdf = pdf;
 			this.pdd = PDDocument.load(pdf);
 			this.pdfreader = new PDFTextStripper();
 			this.splitter = new Splitter();
 			this.pdf_pages = splitter.split(pdd);
-			//List<PDDocument> pdf_all_pages = splitter.split(pdd);
-			//this.pdf_pages = pdf_all_pages.subList(page_start, page_end); //only work with the part of the pdf we want, avoid loading too much into memory
 			this.page_iterator = pdf_pages.listIterator(page_start);
 
 		} catch(InvalidPasswordException e) {
@@ -52,6 +48,9 @@ public class PDFHandler {
 	
 	public String nextPage() {
 		try { 
+			if (!page_iterator.hasNext())
+				return "FINISHED.";
+
 			return pdfreader.getText(page_iterator.next());
 		} catch(IOException e) {
 			return "IOException trying to fetch next PDF page";

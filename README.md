@@ -1,4 +1,4 @@
-##One Line At A Time
+## One Line At A Time
 
 .. is a very light app that lets you paste long texts, and then play it back one line at a time.
 
@@ -9,7 +9,7 @@ The PDF reader uses Apache PDFBox API.
 ## Instructions:
 * Choose PDF mode or Text mode (where you copy paste text yourself, if you wish). In PDF mode, specify which page you want to start on, pick your PDF, and go!
 
-##TODO
+## TODO
 * Make a better TextReader, which doesnt let too small sentences through (for example Fig. A. B. and such things).
 * Make Android app
 

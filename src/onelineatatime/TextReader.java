@@ -1,6 +1,11 @@
 package onelineatatime;
 /* This class handles the text splitting and sending the text lines to GUI */
 
+/**
+ * Handles splitting and processing the text, and returning them as lines to be read one at a time.
+ * @author Max Körlinge
+ *
+ */
 public class TextReader {
 
 	private String text;
@@ -8,8 +13,10 @@ public class TextReader {
 	private int totalLines = 0;
 	private int lineCounter = 0;
 
-	private String endText = "FINISHED";
-
+	/**
+	 * Constructor, splits the text on instantiating the object.
+	 * @param textInput	The text to be processed.
+	 */
 	public TextReader(String textInput) {
 		text = textInput;
 
@@ -22,6 +29,11 @@ public class TextReader {
 											// split by . or ?
 	}
 
+	/**
+	 * @return	The next line in the text.
+	 * @throws NoNextLineException	When there are no more lines to send, this exception is thrown.
+	 * @see NoNextLineException
+	 */
 	public String getNextLine() throws NoNextLineException {
 		if (lineCounter == totalLines)
 			throw new NoNextLineException();
@@ -29,6 +41,9 @@ public class TextReader {
 		return lines[lineCounter++];
 	}
 
+	/**
+	 * @return The previous line in the text.
+	 */
 	public String getPreviousLine() {
 		if (!(lineCounter > 0)) // if you press prev line while at line 0,
 								// nothing happens

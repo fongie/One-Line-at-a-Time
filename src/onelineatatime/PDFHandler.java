@@ -6,26 +6,34 @@ import java.io.*;
 import org.apache.pdfbox.multipdf.Splitter;
 import org.apache.pdfbox.pdmodel.*;
 import org.apache.pdfbox.text.*;
-//import org.apache.pdfbox.pdmodel.PDDocument;
-//import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
+
+	/**
+	 * Provides the use of the Apache PDFBox API to load the pdf and its text.
+	 * The text is later processed by the TextReader.
+	 * 
+	 * @author Max Körlinge
+	 * @see TextReader
+	 */
 
 public class PDFHandler {
 	
-	private File pdf;
 	private PDDocument pdd;
 	private PDFTextStripper pdfreader;
 	private Splitter splitter;
 	private List<PDDocument> pdf_pages;
 	private Iterator<PDDocument> page_iterator;
 
-	/* The constructor takes a filename, page start, page end. It uses Apache PDFBox to load the pdf,
+	/**
+	 * The constructor takes a filename, page start, page end. It uses Apache PDFBox to load the pdf,
 	 * split it into pages, we put the pages in a list and only continue with the subset of pages that we want,
 	 * and create an iterator.
+	 * 
+	 * @param pdf	A pdf file, as a File object.
+	 * @param page_start	The page on which we wish to start reading
 	 */
 	public PDFHandler(File pdf, int page_start) {
 		try {
-			this.pdf = pdf;
 			this.pdd = PDDocument.load(pdf);
 			this.pdfreader = new PDFTextStripper();
 			this.splitter = new Splitter();
@@ -46,6 +54,9 @@ public class PDFHandler {
 		}
 	}
 	
+	/**
+	 * @return	The text from the next page in the pdf we are reading from.
+	 */
 	public String nextPage() {
 		try { 
 			if (!page_iterator.hasNext())
@@ -53,7 +64,7 @@ public class PDFHandler {
 
 			return pdfreader.getText(page_iterator.next());
 		} catch(IOException e) {
-			return "IOException trying to fetch next PDF page";
+			return "IOException trying to fetch next PDF page.";
 		}
 	}
 }

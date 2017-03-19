@@ -2,22 +2,20 @@ package onelineatatime;
 
 import javax.swing.*;
 
-/* Starts program */
+/**
+ * One Line at a Time is a small program which lets you read long texts one line at a time.
+ * @author Max Körlinge
+ * @see GUI
+ */
 public class OneLineAtATime {
 
 	public static void main(String[] args) {
 
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				GUI gui = new GUI();
+				new GUI();
 			}
 		});
 
 	}
 }
-
-/*
- * TODO - Now delimiter (. or ?) isnt shown in the lines output - Implement the
- * GOTO button (now does nothing) - Implement switching lines with keyboard
- * arrows
- */

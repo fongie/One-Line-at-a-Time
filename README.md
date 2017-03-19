@@ -1,13 +1,22 @@
-##One Line At A Time
+#One Line At A Time
 
 .. is a very light app that lets you paste long texts, and then play it back one line at a time.
 
 This was created because I found it difficult sometimes to focus when reading large articles. Reading one line at a time in big letters lets you focus on what is written instead of focus on trying to find where you are in the text.
 
-#Version 0.1:
-- Initial commit. Main function is working, you paste text and you can play it line by line. However some easy to implement features are on the way soon:
+The PDF reader uses Apache PDFBox API.
+
+## Instructions:
+* Choose PDF mode or Text mode (where you copy paste text yourself, if you wish). In PDF mode, specify which page you want to start on, pick your PDF, and go!
+
+## Version history
+
+### Version 0.2
+* Implemented PDF version, cleaned up the GUI, and wrote javadoc.
+
+### Version 0.1:
+* Initial commit. Main function is working, you paste text and you can play it line by line.
 
 #TODO
-		- Now delimiter (. or ?) isnt shown in the lines output
-		- Implement the GOTO button (now does nothing)
-		- Implement switching lines with keyboard arrows instead of only mouse (important)
+* Make a better TextReader, which doesnt let too small sentences through (for example Fig. A. B. and such things).
+* Make android app

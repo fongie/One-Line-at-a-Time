@@ -12,6 +12,7 @@ public class TextReader {
 	private String[] lines;
 	private int totalLines = 0;
 	private int lineCounter = 0;
+	private boolean lastReturnedPrevious = false;
 
 	/**
 	 * Constructor, splits the text on instantiating the object.
@@ -35,20 +36,26 @@ public class TextReader {
 	 * @see NoNextLineException
 	 */
 	public String getNextLine() throws NoNextLineException {
-		if (lineCounter == totalLines)
+		if (lastReturnedPrevious) {
+			lineCounter++;
+			lastReturnedPrevious = false;
+		}
+		if (lineCounter == totalLines) {
 			throw new NoNextLineException();
-
-		return lines[lineCounter++];
+		} else {
+			return lines[lineCounter++] + ". ";
+		}
 	}
 
 	/**
 	 * @return The previous line in the text.
 	 */
 	public String getPreviousLine() {
-		if (!(lineCounter > 0)) // if you press prev line while at line 0,
-								// nothing happens
-			return lines[lineCounter];
-		lineCounter--;
-		return lines[--lineCounter];
+		if (lineCounter < 1) {
+			return Constants.noPreviousLine;
+		}
+			lastReturnedPrevious = true;
+			lineCounter--;
+			return lines[--lineCounter] + ". ";
 	}
 }

@@ -19,5 +19,7 @@ public final class Constants {
 	public static final String lineCSS = "<html><body style='width: 800px;'><p style='color: " + textColor
 			+ ";text-align:center; font-size:32px;'>";
 	public static final String endLineCSS = "</p></body></html>";
+	public static final int minLineLength = 70;
+	public static final String noPreviousLine = "ASDLKJERJKFKJKERJKWKWQKJEK";
 
 }

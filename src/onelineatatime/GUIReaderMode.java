@@ -129,7 +129,11 @@ public class GUIReaderMode extends JPanel {
 	 */
 	private void showNextLine() {
 		try {
-			textLine.setText(Constants.lineCSS + reader.getNextLine() + Constants.endLineCSS);
+			String lineToShow = reader.getNextLine();
+			while (lineIsTooShort(lineToShow)) {
+					lineToShow += reader.getNextLine();
+			}
+			textLine.setText(Constants.lineCSS + lineToShow + Constants.endLineCSS);
 		} catch (NoNextLineException ex) {
 			// if pdf mode get next pdf page, else its finished
 			if (mode == 0) {
@@ -141,10 +145,41 @@ public class GUIReaderMode extends JPanel {
 	}
 
 	/**
+	 * Returns if the line is too short, to avoid super short sentences on screen
+	 * Used in showNextLine and showPrevLine
+	 * @param line, the line getting printed on screen
+	 * @return true if shorter than Constants.minLineLength
+	 * @see showNextLine
+	 * @see showPrevLine
+	 */
+	private boolean lineIsTooShort(String line) {
+		if (line.length() < Constants.minLineLength) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
 	 * Shows the previous textline on the screen
 	 */
 	private void showPrevLine() {
-		textLine.setText(Constants.lineCSS + reader.getPreviousLine() + Constants.endLineCSS);
+		String lineToShow = "";
+		try {
+		lineToShow = reader.getPreviousLine();
+			while (lineIsTooShort(lineToShow)) {
+				String prevline = reader.getPreviousLine();
+				if (prevline.equals(Constants.noPreviousLine)) {
+					break;
+				}
+					lineToShow += reader.getPreviousLine();
+			}
+		} catch (ArrayIndexOutOfBoundsException ex) {
+			System.out.println("No previous line");
+		}
+
+		if (!lineToShow.equals(Constants.noPreviousLine)) {
+			textLine.setText(Constants.lineCSS + lineToShow + Constants.endLineCSS);
+		}
 	}
 
 	/**
